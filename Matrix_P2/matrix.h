@@ -444,7 +444,9 @@ class matrix : public matrix_ref<T,Plain> {
 
 	template<typename E>
 	matrix<T>& operator=(const E& expre) {
-
+		std::cout << typeid(expre).name() << std::endl;
+		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
+		std::cout << x.get_height() << std::endl; // works
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);

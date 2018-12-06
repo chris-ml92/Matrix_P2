@@ -37,6 +37,14 @@ public:
 		return leftRef(x, y) + rightRef(x, y);
 	}
 
+	Left getLeft() const {
+		return leftRef;
+	}
+
+	Right getRight() const {
+		return rightRef;
+	}
+
 	template<typename r>
 	mSum<T, thisType, r> operator+(const r& y) {
 		return mSum<T, thisType, r>(*this, y);
