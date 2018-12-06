@@ -29,7 +29,7 @@ for (int i=0; i!=5; ++i) {
 }
 std::cout << std::endl;
 
-A = A + B + A + A + B + A;
+A = A.transpose() + B + A + A + B + A;
 for (int i = 0; i != 5; ++i) {
 	for (int j = 0; j != 5; ++j)
 		std::cout << A(i, j) << ' ';

@@ -71,6 +71,17 @@ class matrix_ref<T, Plain> {
 	unsigned get_height() const { return height; }
 	unsigned get_width() const { return width; }
 	
+
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T,Plain>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, Plain>, r>(*this, y);
+	}
 	
 	protected:
 	matrix_ref(){}
@@ -126,7 +137,19 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	
 	unsigned get_height() const { return base::get_width(); }
 	unsigned get_width() const { return base::get_height(); }
-		
+	
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
+	}
+
 	private:
 	matrix_ref(const base&X) : base(X) {}
 };
@@ -196,8 +219,16 @@ class matrix_ref<T, Window<decorated>> : private matrix_ref<T, decorated> {
 	unsigned get_height() const { return spec.row_end-spec.row_start; }
 	unsigned get_width() const { return spec.col_end-spec.col_start; }
 	
-	
-	
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
+	}
 		
 	private:
 	matrix_ref(const base&X, window_spec win) : base(X), spec(win) {
@@ -277,6 +308,19 @@ class matrix_ref<T, Diagonal<decorated>> : private matrix_ref<T, decorated> {
 		}
 	unsigned get_width() const { return 1; }
 		
+
+	/*
+*
+*
+* @Operator +
+*
+*/
+	template<typename r>
+	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
+	}
+
+
 	private:
 	matrix_ref(const base&X) : base(X) {}
 };
@@ -395,12 +439,6 @@ class matrix : public matrix_ref<T,Plain> {
 			++dest;
 			++source;
 		}
-	}
-	
-
-	template<typename r>
-	mSum<T, matrix<T>, r> operator+(const r& y) {
-		return mSum<T, matrix<T>, r>(*this, y);
 	}
 
 
