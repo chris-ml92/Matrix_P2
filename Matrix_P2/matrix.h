@@ -442,7 +442,7 @@ class matrix : public matrix_ref<T,Plain> {
 	}
 
 
-	template<typename E>
+	template<class E>
 	matrix<T>& operator=(const E& expre) {
 		std::cout << typeid(expre).name() << std::endl;
 		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
