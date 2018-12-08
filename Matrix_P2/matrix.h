@@ -445,15 +445,21 @@ class matrix : public matrix_ref<T,Plain> {
 	template<class E>
 	matrix<T,W,H>& operator=(const E& expre) {
 		std::cout << typeid(expre).name() << std::endl;
+		//matrix<T,W,H> obj1;
+		matrix<T,W,H> obj;
 		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
-		/*
-		for multply:
-		vector<matrix<...>> matrices = ....;
-		while(expre is an expression){
-			matrices.push_back(expre.get_right()); // a matrix
-			expre = expre.get_left(); // an expression
+		
+		auto expreTest = expre;
+		/*if (typeid(x).name() == typeid(obj1).name())
+			std::cout << "ok sono uguali" << std::endl;*/
+		
+		//for multply:
+		std::vector<matrix<T,W,H>> matrices;
+		while(typeid(expreTest).name()!=typeid(obj).name()){
+			matrices.push_back(expreTest.getRight()); // a matrix
+			//expreTest = expreTest.getLeft(); // an expression
 		}
-		*/
+		
 		//std::cout << x.get_height() << std::endl; // works
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
