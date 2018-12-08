@@ -454,13 +454,12 @@ class matrix : public matrix_ref<T,Plain> {
 			std::cout << "ok sono uguali" << std::endl;*/
 		
 		//for multply:
+		auto l = [](auto x) -> auto {return x.getLeft(); };
 		std::vector<matrix<T,W,H>> matrices;
-		while(typeid(expreTest).name()!=typeid(obj).name()){
-			matrices.push_back(expreTest.getRight()); // a matrix
-			//expreTest = expreTest.getLeft(); // an expression
-		}
-		
-		//std::cout << x.get_height() << std::endl; // works
+		auto r = l(expre);
+		//while((auto r = l(expre)).isOperator()){
+			// matrices.push_back(r.getRight());
+		//}
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);
