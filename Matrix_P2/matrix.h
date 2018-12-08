@@ -407,14 +407,14 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 
 
 
-template<typename T> 
+template<typename T,unsigned W=1, unsigned H=1> 
 class matrix : public matrix_ref<T,Plain> {
 	public:
 	
-	matrix( unsigned height, unsigned width ) {
-		this->height = height;
-		this->width = width;
-		data = std::make_shared<std::vector<T>>(width*height);
+	matrix() {
+		this->height = H;
+		this->width = W;
+		data = std::make_shared<std::vector<T>>(H*W);
 	}
 	
 	matrix(const matrix<T>&X) {
@@ -443,10 +443,18 @@ class matrix : public matrix_ref<T,Plain> {
 
 
 	template<class E>
-	matrix<T>& operator=(const E& expre) {
+	matrix<T,W,H>& operator=(const E& expre) {
 		std::cout << typeid(expre).name() << std::endl;
 		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
-		std::cout << x.get_height() << std::endl; // works
+		/*
+		for multply:
+		vector<matrix<...>> matrices = ....;
+		while(expre is an expression){
+			matrices.push_back(expre.get_right()); // a matrix
+			expre = expre.get_left(); // an expression
+		}
+		*/
+		//std::cout << x.get_height() << std::endl; // works
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);
