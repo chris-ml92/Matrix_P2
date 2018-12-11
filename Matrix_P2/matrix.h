@@ -70,6 +70,7 @@ class matrix_ref<T, Plain> {
 	
 	unsigned get_height() const { return height; }
 	unsigned get_width() const { return width; }
+	bool isOperator() {return false;}
 	
 
 	/*
@@ -137,6 +138,8 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	
 	unsigned get_height() const { return base::get_width(); }
 	unsigned get_width() const { return base::get_height(); }
+	bool isOperator() { return false; }
+
 	
 	/*
 	*
@@ -218,6 +221,8 @@ class matrix_ref<T, Window<decorated>> : private matrix_ref<T, decorated> {
 	
 	unsigned get_height() const { return spec.row_end-spec.row_start; }
 	unsigned get_width() const { return spec.col_end-spec.col_start; }
+	bool isOperator() { return false; }
+
 	
 	/*
 	*
@@ -307,6 +312,8 @@ class matrix_ref<T, Diagonal<decorated>> : private matrix_ref<T, decorated> {
 		return std::min(base::get_height(), base::get_width()); 
 		}
 	unsigned get_width() const { return 1; }
+	bool isOperator() { return false; }
+
 		
 
 	/*
@@ -396,6 +403,8 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 	
 	unsigned get_height() const { return base::get_height(); }
 	unsigned get_width() const { return base::get_height(); }
+	bool isOperator() { return false; }
+
 		
 	private:
 	matrix_ref(const base&X) : base(X), zero(0) { assert(base::get_width()==1); }
@@ -445,27 +454,13 @@ class matrix : public matrix_ref<T,Plain> {
 	template<class E>
 	matrix<T,W,H>& operator=(const E& expre) {
 		std::cout << typeid(expre).name() << std::endl;
-		//matrix<T,W,H> obj1;
-		matrix<T,W,H> obj;
-		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
-		
-		auto expreTest = expre;
-		/*if (typeid(x).name() == typeid(obj1).name())
-			std::cout << "ok sono uguali" << std::endl;*/
-		
-		//for multply:
-		auto l = [](auto x) -> auto {return x.getLeft(); };
-		std::vector<matrix<T,W,H>> matrices;
-		auto r = l(expre);
-		//while((auto r = l(expre)).isOperator()){
-			// matrices.push_back(r.getRight());
-		//}
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);
 
 		return *this;
 	}
+	bool isOperator() { return false; }
 
 
 
@@ -473,7 +468,6 @@ class matrix : public matrix_ref<T,Plain> {
 	using matrix_ref<T,Plain>::height;
 	using matrix_ref<T,Plain>::width; 
 	using matrix_ref<T,Plain>::data; 
-
 };
 
 #endif //_MATRIX_H_
