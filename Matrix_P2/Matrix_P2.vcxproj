@@ -123,6 +123,7 @@
     <ClInclude Include="matrix_fwd.h" />
     <ClInclude Include="matrix_wrap.h" />
     <ClInclude Include="OperatorPlus.h" />
+    <ClInclude Include="OperatorStar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="example1.cc" />

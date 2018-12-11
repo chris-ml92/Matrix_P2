@@ -50,8 +50,6 @@ public:
 		return mSum<T, thisType, r>(*this, y);
 	}
 
-	bool isOperator() { return true; }
-
 
 };
 

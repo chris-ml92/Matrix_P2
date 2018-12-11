@@ -8,6 +8,7 @@
 #include"matrix_fwd.h"
 #include"iterators.h"
 #include"OperatorPlus.h"
+#include"OperatorStar.h"
 
 
 
@@ -70,7 +71,6 @@ class matrix_ref<T, Plain> {
 	
 	unsigned get_height() const { return height; }
 	unsigned get_width() const { return width; }
-	bool isOperator() {return false;}
 	
 
 	/*
@@ -83,7 +83,8 @@ class matrix_ref<T, Plain> {
 	mSum<T, matrix_ref<T,Plain>, r> operator+(const r& y) {
 		return mSum<T, matrix_ref<T, Plain>, r>(*this, y);
 	}
-	
+
+
 	protected:
 	matrix_ref(){}
 		
@@ -91,6 +92,91 @@ class matrix_ref<T, Plain> {
 	unsigned height, width;
 
 };
+
+template<typename T, unsigned H, unsigned W>
+class matrix_ref<T, staticSizes<H,W>> {
+public:
+
+	static constexpr unsigned Height = H;
+	static constexpr unsigned Width = W;
+
+	//type members
+	typedef T type;
+	typedef Plain matrix_type;
+	typedef typename std::vector<T>::iterator iterator;
+	typedef typename std::vector<T>::const_iterator const_iterator;
+	typedef typename std::vector<T>::iterator row_iterator;
+	typedef typename std::vector<T>::const_iterator const_row_iterator;
+
+	typedef index_col_iterator<T, staticSizes<H, W>> col_iterator;
+	typedef const_index_col_iterator<T, staticSizes<H, W>> const_col_iterator;
+
+
+	T& operator ()(unsigned row, unsigned column) {
+		return data->operator[](row*width + column);
+	}
+	const T& operator ()(unsigned row, unsigned column) const {
+		return data->operator[](row*width + column);
+	}
+
+
+
+	iterator begin() { return data->begin(); }
+	iterator end() { return data->end(); }
+	const_iterator begin() const { return data->begin(); }
+	const_iterator end() const { return data->end(); }
+
+	row_iterator row_begin(unsigned i) { return data->begin() + i * width; }
+	row_iterator row_end(unsigned i) { return data->begin() + (i + 1)*width; }
+	const_row_iterator row_begin(unsigned i) const { return data->begin() + i * width; }
+	const_row_iterator row_end(unsigned i) const { return data->begin() + (i + 1)*width; }
+
+	col_iterator col_begin(unsigned i) { return col_iterator(*this, 0, i); }
+	col_iterator col_end(unsigned i) { return col_iterator(*this, 0, i + 1); }
+	const_col_iterator col_begin(unsigned i) const { return const_col_iterator(*this, 0, i); }
+	const_col_iterator col_end(unsigned i) const { return const_col_iterator(*this, 0, i + 1); }
+
+
+	matrix_ref<T, Transpose<staticSizes<H, W>>> transpose() const {
+		return matrix_ref<T, Transpose<staticSizes<H, W>>>(*this);
+	}
+
+	matrix_ref<T, Window<staticSizes<H, W>>> window(window_spec spec) const {
+		return matrix_ref<T, Window<staticSizes<H, W>>>(*this, spec);
+	}
+
+	matrix_ref<T, Diagonal<staticSizes<H, W>>> diagonal() const {
+		return matrix_ref<T, Diagonal<staticSizes<H, W>>>(*this);
+	}
+
+	const matrix_ref<T, Diagonal_matrix<staticSizes<H, W>>> diagonal_matrix() const {
+		return matrix_ref<T, Diagonal_matrix<staticSizes<H, W>>>(*this);
+	}
+
+	constexpr unsigned get_height() const { return height; }
+	constexpr unsigned get_width() const { return width; }
+
+
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T, staticSizes<H, W>>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, staticSizes<H, W>>, r>(*this, y);
+	}
+
+
+protected:
+	matrix_ref() {}
+
+	std::shared_ptr<std::vector<T>> data;
+	unsigned height, width;
+
+};
+
 
 
 template<typename T, class decorated> 
@@ -138,8 +224,6 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	
 	unsigned get_height() const { return base::get_width(); }
 	unsigned get_width() const { return base::get_height(); }
-	bool isOperator() { return false; }
-
 	
 	/*
 	*
@@ -221,8 +305,6 @@ class matrix_ref<T, Window<decorated>> : private matrix_ref<T, decorated> {
 	
 	unsigned get_height() const { return spec.row_end-spec.row_start; }
 	unsigned get_width() const { return spec.col_end-spec.col_start; }
-	bool isOperator() { return false; }
-
 	
 	/*
 	*
@@ -312,8 +394,6 @@ class matrix_ref<T, Diagonal<decorated>> : private matrix_ref<T, decorated> {
 		return std::min(base::get_height(), base::get_width()); 
 		}
 	unsigned get_width() const { return 1; }
-	bool isOperator() { return false; }
-
 		
 
 	/*
@@ -403,8 +483,6 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 	
 	unsigned get_height() const { return base::get_height(); }
 	unsigned get_width() const { return base::get_height(); }
-	bool isOperator() { return false; }
-
 		
 	private:
 	matrix_ref(const base&X) : base(X), zero(0) { assert(base::get_width()==1); }
@@ -417,7 +495,7 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 
 
 template<typename T,unsigned W=1, unsigned H=1> 
-class matrix : public matrix_ref<T,Plain> {
+class matrix : public matrix_ref<T,staticSizes<H,W>> {
 	public:
 	
 	matrix() {
@@ -451,23 +529,50 @@ class matrix : public matrix_ref<T,Plain> {
 	}
 
 
+	/*
+*
+*
+* @Operator +
+*
+*/
+	template<typename r>
+	mMult<T, matrix<T>::Height, r::Width> operator*(const r& y) {
+		return mMult<T, matrix<T>::Height, r::Width>(*this, y);
+	}
+
+
 	template<class E>
 	matrix<T,W,H>& operator=(const E& expre) {
 		std::cout << typeid(expre).name() << std::endl;
+		//matrix<T,W,H> obj1;
+		matrix<T,W,H> obj;
+		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
+		
+		auto expreTest = expre;
+		/*if (typeid(x).name() == typeid(obj1).name())
+			std::cout << "ok sono uguali" << std::endl;*/
+		
+		//for multply:
+		auto l = [](auto x) -> auto {return x.getLeft(); };
+		std::vector<matrix<T,W,H>> matrices;
+		auto r = l(expre);
+		//while((auto r = l(expre)).isOperator()){
+			// matrices.push_back(r.getRight());
+		//}
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);
 
 		return *this;
 	}
-	bool isOperator() { return false; }
 
 
 
 	private:
-	using matrix_ref<T,Plain>::height;
-	using matrix_ref<T,Plain>::width; 
-	using matrix_ref<T,Plain>::data; 
+	using matrix_ref<T, staticSizes<H, W>>::height;
+	using matrix_ref<T, staticSizes<H, W>>::width;
+	using matrix_ref<T, staticSizes<H, W>>::data;
+
 };
 
 #endif //_MATRIX_H_

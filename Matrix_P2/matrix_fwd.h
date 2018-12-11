@@ -8,6 +8,8 @@ template<class decorated> struct Window;
 template<class decorated> struct Diagonal;
 template<class decorated> struct Diagonal_matrix;
 
+template<unsigned H, unsigned W> struct staticSizes;
+
 template<typename T, class matrix_type=Plain> class matrix_ref;
 
 
