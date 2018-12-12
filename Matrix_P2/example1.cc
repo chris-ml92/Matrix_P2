@@ -2,6 +2,7 @@
 
 #include"matrix.h"
 #include "OperatorStar.h"
+#include <limits>
  // Matric Chain Multiplication Algorithm !
 
  // multiply two matrices
@@ -51,7 +52,7 @@ matrix<int, 5, 5> doMult(std::vector<matrix<int, 5, 5>> list) {
 	for (int L = 2; L < n; L++) {
 		for (int i = 1; i < n - L + 1; i++) {
 			int j = i + L - 1;
-			m[i][j] = 999999;
+			m[i][j] = std::numeric_limits<int>::max();
 			for (int k = i; k <= j - 1; k++) {
 				int q = m[i][k] + m[k + 1][j] + p[i - 1 + 1] * p[k] * p[j];
 				if (q < m[i][j]) {
