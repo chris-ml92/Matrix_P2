@@ -120,8 +120,6 @@ public:
 		return data->operator[](row*width + column);
 	}
 
-
-
 	iterator begin() { return data->begin(); }
 	iterator end() { return data->end(); }
 	const_iterator begin() const { return data->begin(); }
@@ -138,20 +136,20 @@ public:
 	const_col_iterator col_end(unsigned i) const { return const_col_iterator(*this, 0, i + 1); }
 
 
-	matrix_ref<T, Transpose<staticSizes<H, W>>> transpose() const {
-		return matrix_ref<T, Transpose<staticSizes<H, W>>>(*this);
+	matrix_ref<T, Transpose<myType>> transpose() const {
+		return matrix_ref<T, Transpose<myType>>(*this);
 	}
 
-	matrix_ref<T, Window<staticSizes<H, W>>> window(window_spec spec) const {
-		return matrix_ref<T, Window<staticSizes<H, W>>>(*this, spec);
+	matrix_ref<T, Window<myType>> window(window_spec spec) const {
+		return matrix_ref<T, Window<myType>>(*this, spec);
 	}
 
-	matrix_ref<T, Diagonal<staticSizes<H, W>>> diagonal() const {
-		return matrix_ref<T, Diagonal<staticSizes<H, W>>>(*this);
+	matrix_ref<T, Diagonal<myType>> diagonal() const {
+		return matrix_ref<T, Diagonal<myType>>(*this);
 	}
 
-	const matrix_ref<T, Diagonal_matrix<staticSizes<H, W>>> diagonal_matrix() const {
-		return matrix_ref<T, Diagonal_matrix<staticSizes<H, W>>>(*this);
+	const matrix_ref<T, Diagonal_matrix<myType>> diagonal_matrix() const {
+		return matrix_ref<T, Diagonal_matrix<myType>>(*this);
 	}
 
 	constexpr unsigned get_height() const { return height; }
@@ -180,6 +178,19 @@ public:
 		return mMult<T>(*this,y);
 	}*/
 
+	/*Static get*/
+	template<unsigned Row, unsigned Col>
+	T& getValue() {
+		static_assert(Row < Height && Col < Width, "wrong sizes");
+		return operator()(Row, Col);
+	}
+	/*Static getValue()*/
+	template<unsigned Row, unsigned Col>
+	const T& getValue() const {
+		static_assert(Row < Height && Col < Width, "wrong sizes");
+		return operator()(Row, Col);
+	}
+
 
 protected:
 	matrix_ref() {}
@@ -206,7 +217,7 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	typedef typename base::const_row_iterator const_col_iterator;
 	typedef typename base::col_iterator row_iterator;
 	typedef typename base::const_col_iterator const_row_iterator;
-	
+
 	
 	T& operator ()( unsigned row, unsigned column ) 
 	{ return base::operator()(column, row); }
@@ -248,6 +259,44 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
 		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
 	}
+
+
+	/*
+	*
+	*
+	* @ static dimensions
+	*
+	*
+	*/
+	static constexpr unsigned Height = base::Width;
+	static constexpr unsigned Width = base::Height;
+
+
+	/*
+	*
+	*
+	* @ static getValue()
+	*
+	*
+	*/
+	template<unsigned Row, unsigned Col>
+	T& getValue() {
+		static_assert(Row < Height && Col && Height!=0 < Width, "wrong sizes");
+		return base::template get<Col,Row>();
+	}
+	/*
+	*
+	*
+	* @ static const getValue() const
+	*
+	*
+	*/
+	template<unsigned Row, unsigned Col>
+	const T& getValue() const {
+		static_assert(Row < Height && Col && Height != 0 < Width, "wrong sizes");
+		return base::template get<Col, Row>();
+	}
+	
 
 	private:
 	matrix_ref(const base&X) : base(X) {}
@@ -409,14 +458,50 @@ class matrix_ref<T, Diagonal<decorated>> : private matrix_ref<T, decorated> {
 		
 
 	/*
-*
-*
-* @Operator +
-*
-*/
+	*
+	*
+	* @Operator +
+	*
+	*/
 	template<typename r>
 	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
 		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
+	}
+
+	/*
+	*
+	*
+	* @ static sizes
+	*
+	*
+	*/
+	static constexpr unsigned Height = base::Height;
+	static constexpr unsigned Width	 = 1;
+
+	/*
+	*
+	*
+	* @ static getValue()
+	*
+	*
+	*/
+	template<unsigned Row, unsigned Col = 0>
+	T& getValue() {
+		static_assert(Row < Height && Col < Width, "wrong sizes Diagonal");
+		return base::template getValue<Row, Col>();
+	}
+
+	/*
+	*
+	*
+	* @ static const getValue() const
+	*
+	*
+	*/
+	template<unsigned Row, unsigned Col = 0>
+	const T& getValue() const {
+		static_assert(Row < Height && Col < Width, "wrong sizes Diagonal");
+		return base::template getValue<Row, Col>();
 	}
 
 
@@ -495,7 +580,33 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 	
 	unsigned get_height() const { return base::get_height(); }
 	unsigned get_width() const { return base::get_height(); }
-		
+
+
+	/*
+	*
+	*
+	* @ static sizes
+	*
+	*
+	*/
+	static constexpr unsigned Height = base::Height;
+	static constexpr unsigned Width	 = base::Height;
+
+	/*
+	*
+	*
+	* @ static const getValue() const
+	*
+	*
+	*/
+	template<unsigned Row, unsigned Col = 0>
+	const T& getValue() const {
+		static_assert(Row < Height && Col < Width && Height!=0, "wrong sizes Diagonal_Matrix");
+		if (Row != Col)
+			return 0;
+		return base::template getValue<Row, 0>();
+	}
+
 	private:
 	matrix_ref(const base&X) : base(X), zero(0) { assert(base::get_width()==1); }
 	const T zero;
