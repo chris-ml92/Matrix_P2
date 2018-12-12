@@ -37,7 +37,7 @@ for (int i = 0; i != 5; ++i) {
 }
 std::cout << std::endl;
 
-auto H = A * A;
+//auto H = A * A;
 
 /*
 auto C=B.window({1,4,1,4});

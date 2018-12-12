@@ -4,10 +4,11 @@
 #include<vector>
 #include<memory>
 #include<cassert>
-
+#include<algorithm>
 #include"matrix_fwd.h"
 #include"iterators.h"
-
+#include"OperatorPlus.h"
+//#include"OperatorStar.h"
 
 
 
@@ -27,13 +28,6 @@ class matrix_ref<T, Plain> {
 	typedef const_index_col_iterator<T,Plain> const_col_iterator;
 	
 	
-	static constexpr unsigned H=0;
-	static constexpr unsigned W=0;
-	
-	//matrix_ref<T, Plain>& operator =(const matrix_ref<T, Plain>&) = delete;
-	//matrix_ref<T, Plain>& operator =(matrix_ref<T, Plain>&&) = delete;
-	
-	
 	T& operator ()( unsigned row, unsigned column ) { 
 		return data->operator[](row*width + column);
 	}
@@ -41,10 +35,6 @@ class matrix_ref<T, Plain> {
 		return data->operator[](row*width + column);
 	}
 	
-	template<unsigned i, unsigned j>
-	T& get() { return operator()(i,j); }
-	template<unsigned i, unsigned j>
-	const T& get() const { return operator()(i,j); }
 	
 	
 	iterator begin() { return data->begin(); }
@@ -82,7 +72,19 @@ class matrix_ref<T, Plain> {
 	unsigned get_height() const { return height; }
 	unsigned get_width() const { return width; }
 	
-	
+
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T,Plain>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, Plain>, r>(*this, y);
+	}
+
+
 	protected:
 	matrix_ref(){}
 		
@@ -91,100 +93,101 @@ class matrix_ref<T, Plain> {
 
 };
 
+template<typename T, unsigned H, unsigned W>
+class matrix_ref<T, staticSizes<H,W>> {
+public:
 
+	static constexpr unsigned Height = H;
+	static constexpr unsigned Width = W;
+	typedef staticSizes<H, W> myType;
 
-
-template<typename T, unsigned h, unsigned w> 
-class matrix_ref<T, Sized<h,w>> {
-	public:
-	
 	//type members
 	typedef T type;
-	typedef Sized<h,w> matrix_type;
+	typedef Plain matrix_type;
 	typedef typename std::vector<T>::iterator iterator;
 	typedef typename std::vector<T>::const_iterator const_iterator;
 	typedef typename std::vector<T>::iterator row_iterator;
 	typedef typename std::vector<T>::const_iterator const_row_iterator;
-	
-	typedef index_col_iterator<T,Sized<h,w>> col_iterator;
-	typedef const_index_col_iterator<T,Sized<h,w>> const_col_iterator;
-	
-	
-	static constexpr unsigned H=h;
-	static constexpr unsigned W=w;
-	
-	//matrix_ref<T, Plain>& operator =(const matrix_ref<T, Plain>&) = delete;
-	//matrix_ref<T, Plain>& operator =(matrix_ref<T, Plain>&&) = delete;
-	
-	
-	T& operator ()( unsigned row, unsigned column ) { 
+
+	typedef index_col_iterator<T, staticSizes<H, W>> col_iterator;
+	typedef const_index_col_iterator<T, staticSizes<H, W>> const_col_iterator;
+
+
+	T& operator ()(unsigned row, unsigned column) {
 		return data->operator[](row*width + column);
 	}
-	const T& operator ()( unsigned row, unsigned column ) const { 
+	const T& operator ()(unsigned row, unsigned column) const {
 		return data->operator[](row*width + column);
 	}
-	
-	template<unsigned i, unsigned j>
-	T& get() { 
-		static_assert(i<h && j<w, "dimension mismatch");
-		return operator()(i,j); 
-	}
-	template<unsigned i, unsigned j>
-	const T& get() const { 
-		static_assert(i<h && j<w, "dimension mismatch");
-		return operator()(i,j); 
-	}
-	
-	
+
+
+
 	iterator begin() { return data->begin(); }
 	iterator end() { return data->end(); }
 	const_iterator begin() const { return data->begin(); }
 	const_iterator end() const { return data->end(); }
-	
-	row_iterator row_begin(unsigned i) { return data->begin() + i*width; }
-	row_iterator row_end(unsigned i) { return data->begin() + (i+1)*width; }
-	const_row_iterator row_begin(unsigned i) const { return data->begin() + i*width; }
-	const_row_iterator row_end(unsigned i) const { return data->begin() + (i+1)*width; }
-	
-	col_iterator col_begin(unsigned i) { return col_iterator(*this,0,i); }
-	col_iterator col_end(unsigned i) { return col_iterator(*this,0,i+1); }
-	const_col_iterator col_begin(unsigned i) const { return const_col_iterator(*this,0,i); }
-	const_col_iterator col_end(unsigned i) const { return const_col_iterator(*this,0,i+1); }
-	
-	
-	matrix_ref<T, Transpose<Sized<h,w>>> transpose() const { 
-		return matrix_ref<T, Transpose<Sized<h,w>>>(*this);
+
+	row_iterator row_begin(unsigned i) { return data->begin() + i * width; }
+	row_iterator row_end(unsigned i) { return data->begin() + (i + 1)*width; }
+	const_row_iterator row_begin(unsigned i) const { return data->begin() + i * width; }
+	const_row_iterator row_end(unsigned i) const { return data->begin() + (i + 1)*width; }
+
+	col_iterator col_begin(unsigned i) { return col_iterator(*this, 0, i); }
+	col_iterator col_end(unsigned i) { return col_iterator(*this, 0, i + 1); }
+	const_col_iterator col_begin(unsigned i) const { return const_col_iterator(*this, 0, i); }
+	const_col_iterator col_end(unsigned i) const { return const_col_iterator(*this, 0, i + 1); }
+
+
+	matrix_ref<T, Transpose<staticSizes<H, W>>> transpose() const {
+		return matrix_ref<T, Transpose<staticSizes<H, W>>>(*this);
 	}
-	
-	matrix_ref<T, Window<Sized<h,w>>> window(window_spec spec) const {
-		return matrix_ref<T, Window<Sized<h,w>>>(*this, spec);
+
+	matrix_ref<T, Window<staticSizes<H, W>>> window(window_spec spec) const {
+		return matrix_ref<T, Window<staticSizes<H, W>>>(*this, spec);
 	}
-	
-	matrix_ref<T, Diagonal<Sized<h,w>>> diagonal() const {
-		return matrix_ref<T, Diagonal<Sized<h,w>>>(*this);
+
+	matrix_ref<T, Diagonal<staticSizes<H, W>>> diagonal() const {
+		return matrix_ref<T, Diagonal<staticSizes<H, W>>>(*this);
 	}
-	
-	const matrix_ref<T, Diagonal_matrix<Sized<h,w>>> diagonal_matrix() const {
-		return matrix_ref<T, Diagonal_matrix<Sized<h,w>>>(*this);
+
+	const matrix_ref<T, Diagonal_matrix<staticSizes<H, W>>> diagonal_matrix() const {
+		return matrix_ref<T, Diagonal_matrix<staticSizes<H, W>>>(*this);
 	}
-	
-	unsigned get_height() const { return height; }
-	unsigned get_width() const { return width; }
-	
-	
-	protected:
-	matrix_ref(){}
-		
+
+	constexpr unsigned get_height() const { return height; }
+	constexpr unsigned get_width() const { return width; }
+
+
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T, staticSizes<H, W>>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, staticSizes<H, W>>, r>(*this, y);
+	}
+
+	/*
+	*
+	*
+	* @Operator *
+	*
+	*/
+	/*template<typename r>
+	auto operator*(const matrix_ref<T, r>& y) {
+		return mMult<T>(*this,y);
+	}*/
+
+
+protected:
+	matrix_ref() {}
+
 	std::shared_ptr<std::vector<T>> data;
 	unsigned height, width;
 
 };
-
-
-
-
-
-
 
 
 
@@ -204,26 +207,11 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	typedef typename base::col_iterator row_iterator;
 	typedef typename base::const_col_iterator const_row_iterator;
 	
-	static constexpr unsigned H=base::W;
-	static constexpr unsigned W=base::H;
-	
 	
 	T& operator ()( unsigned row, unsigned column ) 
 	{ return base::operator()(column, row); }
 	const T& operator ()( unsigned row, unsigned column ) const
 	{ return base::operator()(column, row); }
-	
-	template<unsigned i, unsigned j>
-	T& get() { 
-		static_assert(H!=0 && i<H && j<W, "dimension mismatch");
-		return base::template get<j,i>(); 
-		}
-	template<unsigned i, unsigned j>
-	const T& get() const { 
-		static_assert(H!=0 && i<H && j<W, "dimension mismatch");
-		return base::template get<j,i>(); 
-		}
-
 	
 	using base::begin;
 	using base::end;
@@ -248,7 +236,19 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	
 	unsigned get_height() const { return base::get_width(); }
 	unsigned get_width() const { return base::get_height(); }
-		
+	
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
+	}
+
 	private:
 	matrix_ref(const base&X) : base(X) {}
 };
@@ -272,8 +272,6 @@ class matrix_ref<T, Window<decorated>> : private matrix_ref<T, decorated> {
 	typedef index_col_iterator<T,Window<decorated>> col_iterator;
 	typedef const_index_col_iterator<T,Window<decorated>> const_col_iterator;
 	
-	static constexpr unsigned H=0;
-	static constexpr unsigned W=0;
 	
 	T& operator ()( unsigned row, unsigned column ) 
 	{ return base::operator()(row+spec.row_start, column+spec.col_start); }
@@ -320,8 +318,16 @@ class matrix_ref<T, Window<decorated>> : private matrix_ref<T, decorated> {
 	unsigned get_height() const { return spec.row_end-spec.row_start; }
 	unsigned get_width() const { return spec.col_end-spec.col_start; }
 	
-	
-	
+	/*
+	*
+	*
+	* @Operator +
+	*
+	*/
+	template<typename r>
+	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
+	}
 		
 	private:
 	matrix_ref(const base&X, window_spec win) : base(X), spec(win) {
@@ -351,9 +357,6 @@ class matrix_ref<T, Diagonal<decorated>> : private matrix_ref<T, decorated> {
 	typedef const_index_col_iterator<T,Diagonal<decorated>> const_col_iterator;
 	
 	
-	static constexpr unsigned H=base::H;
-	static constexpr unsigned W=(base::W==0)?0:1;
-	
 	T& operator ()( unsigned row, unsigned column=0 ) 
 	{
 		assert(column==0);
@@ -364,17 +367,6 @@ class matrix_ref<T, Diagonal<decorated>> : private matrix_ref<T, decorated> {
 		assert(column==0);
 		return base::operator()(row,row);
 	}
-	
-	template<unsigned i, unsigned j=0>
-	T& get() { 
-		static_assert(H!=0 && i<H && j<W, "dimension mismatch");
-		return base::template get<i,j>(); 
-	}
-	template<unsigned i, unsigned j=0>
-	const T& get() const { 
-		static_assert(H!=0 && i<H && j<W, "dimension mismatch");
-		return base::template get<i,j>(); 
-		}
 	
 	
 	iterator begin() { return iterator(*this,0,0); }
@@ -415,6 +407,19 @@ class matrix_ref<T, Diagonal<decorated>> : private matrix_ref<T, decorated> {
 		}
 	unsigned get_width() const { return 1; }
 		
+
+	/*
+*
+*
+* @Operator +
+*
+*/
+	template<typename r>
+	mSum<T, matrix_ref<T, matrix_type>, r> operator+(const r& y) {
+		return mSum<T, matrix_ref<T, matrix_type>, r>(*this, y);
+	}
+
+
 	private:
 	matrix_ref(const base&X) : base(X) {}
 };
@@ -438,10 +443,6 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 	//typedef index_col_iterator<T,Diagonal_matrix<decorated>> col_iterator;
 	typedef const_index_col_iterator<T,Diagonal_matrix<decorated>> const_col_iterator;
 	
-	static constexpr unsigned H=base::H;
-	static constexpr unsigned W=base::H;
-	
-	
 	//Diagonal_matrix is always const!
 	/*
 	T& operator ()( unsigned row, unsigned column ) 
@@ -455,18 +456,7 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 		if (row!=column) return zero;
 		else return base::operator()(row,0);
 	}
-	/*
-	template<unsigned i, unsigned j=0>
-	typename std::enable_if<H!=0,T&>::type get() { 
-		static_asert(i<H && j<W, "dimension mismatch");
-		return base::template get<i,j>(); 
-	}
-	*/
-	template<unsigned i, unsigned j=0>
-	const T& get() const { 
-		static_assert(H!=0 && i<H && j<W, "dimension mismatch");
-		return (i!=j)?zero:(base::template get<i,0>()); 
-		}
+	
 	
 	//iterator begin() { return iterator(*this,0,0); }
 	//iterator end() { return iterator(*this,get_height(),0); }
@@ -513,114 +503,30 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 
 
 
-template<typename T, unsigned...sizes> class matrix;
 
 
 
-template<typename T> 
-class matrix<T> : public matrix_ref<T,Plain> {
+template<typename T,unsigned W=1, unsigned H=1> 
+class matrix : public matrix_ref<T,staticSizes<H,W>> {
 	public:
-	
-	matrix( unsigned height, unsigned width ) {
-		this->height = height;
-		this->width = width;
-		data = std::make_shared<std::vector<T>>(width*height);
-		
-		std::cerr << "matrix constructor\n";
-	}
-	
-	matrix(const matrix<T>& X) {
-		height = X.height;
-		width = X.width;
-		data = std::make_shared<std::vector<T>>(width*height);
-		*data = *(X.data);
-		
-		std::cerr << "matrix copy constructor\n";
-	}
-	
-/*	matrix(matrix<T>&& X) {
-		height = X.height;
-		width = X.width;
-		data = std::move(X.data);
-		
-		std::cerr << "matrix move constructor\n";
-	}*/
-	
-	template<class matrix_type>
-	matrix(const matrix_ref<T,matrix_type>&X) {
-		height = X.get_height();
-		width = X.get_width();
-		data = std::make_shared<std::vector<T>>(width*height);
-		//copy does not work as my row_iterators do not provide all the facilities of iterators
-		//std::copy(X.row_begin(0),X.row_begin(height),data->begin());
-		auto source=X.row_begin(0);
-		const auto end=X.row_begin(height);
-		auto dest=data->begin();
-		while (source!=end) {
-			*dest = *source;
-			++dest;
-			++source;
-		}
-		
-		std::cerr << "matrix foreign constructor\n";
-	}
-	
-	using matrix_ref<T,Plain>::H;
-	using matrix_ref<T,Plain>::W;
-
-	private:
-	using matrix_ref<T,Plain>::height;
-	using matrix_ref<T,Plain>::width; 
-	using matrix_ref<T,Plain>::data; 
-
-};
-
-
-
-
-
-template<typename T, unsigned h, unsigned w> 
-class matrix<T,h,w> : public matrix_ref<T,Sized<h,w>> {
-	public:
-	
-	static_assert(h!=0 && w!=0, "matrix static sizes cannot be 0");
 	
 	matrix() {
-		this->height = h;
-		this->width = w;
-		data = std::make_shared<std::vector<T>>(w*h);
-		
-		std::cerr << "sized matrix constructor\n";
+		this->height = H;
+		this->width = W;
+		data = std::make_shared<std::vector<T>>(H*W);
 	}
 	
-	matrix(const matrix<T,h,w>& X) {
+	matrix(const matrix<T>&X) {
 		height = X.height;
 		width = X.width;
 		data = std::make_shared<std::vector<T>>(width*height);
 		*data = *(X.data);
-		
-		std::cerr << "sized matrix copy constructor\n";
 	}
-	
-		matrix(matrix<T,h,w>&& X) {
-		height = X.height;
-		width = X.width;
-		data = std::move(X.data);
-		
-		std::cerr << "sized matrix move constructor\n";
-	}
-	
-
 	
 	template<class matrix_type>
 	matrix(const matrix_ref<T,matrix_type>&X) {
-		static_assert((matrix_ref<T,matrix_type>::H==0 || matrix_ref<T,matrix_type>::H==h) && (
-				matrix_ref<T,matrix_type>::W==0 || matrix_ref<T,matrix_type>::W==w),
-				"uncompatible sizes in sized matrix construction");
-		
 		height = X.get_height();
 		width = X.get_width();
-		assert(height==h && width==w);
 		data = std::make_shared<std::vector<T>>(width*height);
 		//copy does not work as my row_iterators do not provide all the facilities of iterators
 		//std::copy(X.row_begin(0),X.row_begin(height),data->begin());
@@ -632,18 +538,41 @@ class matrix<T,h,w> : public matrix_ref<T,Sized<h,w>> {
 			++dest;
 			++source;
 		}
-		
-		std::cerr << "sized matrix foreign constructor\n";
-	}	
+	}
 
-	using matrix_ref<T,Sized<h,w>>::H;
-	using matrix_ref<T,Sized<h,w>>::W;
-	
-	
+
+
+	template<class E>
+	matrix<T,W,H>& operator=(const E& expre) {
+		std::cout << typeid(expre).name() << std::endl;
+		//matrix<T,W,H> obj1;
+		matrix<T,W,H> obj;
+		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
+		
+		auto expreTest = expre;
+		/*if (typeid(x).name() == typeid(obj1).name())
+			std::cout << "ok sono uguali" << std::endl;*/
+		
+		//for multply:
+		auto l = [](auto x) -> auto {return x.getLeft(); };
+		std::vector<matrix<T,W,H>> matrices;
+		auto r = l(expre);
+		//while((auto r = l(expre)).isOperator()){
+			// matrices.push_back(r.getRight());
+		//}
+		for (unsigned i = 0; i < height; i++)
+			for (unsigned j = 0; j < width; j++)
+				data-> operator [](i*width + j) = expre(i, j);
+
+		return *this;
+	}
+
+
+
 	private:
-	using matrix_ref<T,Sized<h,w>>::height;
-	using matrix_ref<T,Sized<h,w>>::width; 
-	using matrix_ref<T,Sized<h,w>>::data; 
+	using matrix_ref<T, staticSizes<H, W>>::height;
+	using matrix_ref<T, staticSizes<H, W>>::width;
+	using matrix_ref<T, staticSizes<H, W>>::data;
 
 };
 
