@@ -45,6 +45,35 @@ class concrete_iterator_impl : public iterator_impl<T> {
 	private:
 	iterator_type iterator;
 };
+
+
+template<typename T, typename iterator_type>
+class concrete_nonconst_iterator_impl : public iterator_impl<T> {
+	public:
+	concrete_nonconst_iterator_impl(iterator_type iter) : iterator(iter) {}
+	
+	void increment() override { ++iterator; }
+	T& dereference() override { 
+		static T result;
+		return (result = *iterator); 
+	}
+	bool is_equal(const iterator_impl<T>* X) const override {
+		const concrete_nonconst_iterator_impl<T,iterator_type>* Xp = 
+			dynamic_cast<const concrete_nonconst_iterator_impl<T,iterator_type>*>(X);
+		if (!Xp) return false;
+		else return iterator == Xp->iterator;
+	}
+	
+	std::unique_ptr<iterator_impl<T>> clone() const override {
+		return std::make_unique<concrete_nonconst_iterator_impl<T,iterator_type>>(iterator);
+	}
+	
+	private:
+	iterator_type iterator;
+};
+
+
+
 	
 template<typename T, typename const_iterator_type>
 class concrete_const_iterator_impl : public const_iterator_impl<T> {
@@ -151,6 +180,9 @@ struct matrix_wrap_impl {
 	virtual std::unique_ptr<iterator_impl<T>> end() = 0;
 	virtual std::unique_ptr<const_iterator_impl<T>> begin() const = 0; 
 	virtual std::unique_ptr<const_iterator_impl<T>> end() const = 0;
+	
+	virtual unsigned get_height() const = 0;
+	virtual unsigned get_width() const = 0;
 };
 
 
@@ -220,12 +252,113 @@ class concrete_matrix_wrap_impl : public matrix_wrap_impl<T> {
 			> (mat.end());
 	}
 	
+	unsigned get_height() const override { return mat.get_height(); }
+	unsigned get_width() const override { return mat.get_width(); }
 	
 	concrete_matrix_wrap_impl(const matrix_ref<T,matrix_type>& M) : mat(M) {}
 	
 	private:
 	matrix_ref<T,matrix_type> mat;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+template<typename T, class decorated>
+class concrete_matrix_wrap_impl<T,Diagonal_matrix<decorated>> : public matrix_wrap_impl<T> {
+	public:
+	T& get(unsigned i, unsigned j) override { 
+		static T result;
+		return result=mat(i,j); 
+		}
+	const T& get(unsigned i, unsigned j) const override { return mat(i,j); }
+	
+	std::unique_ptr<matrix_wrap_impl<T>> clone() const override {
+		return std::make_unique<concrete_matrix_wrap_impl<T,Diagonal_matrix<decorated>>>(mat);
+	}
+	
+	std::unique_ptr<matrix_wrap_impl<T>> transpose() const override {
+		return clone();
+	}
+
+	//will not work: cyclic type expansion!
+	/*
+	std::unique_ptr<matrix_wrap_impl<T>> window(window_spec spec) const  override{
+		return std::make_unique<
+			concrete_matrix_wrap_impl<T,typename decltype(mat.window(spec))::matrix_type>
+			>(mat.window(spec));
+	}
+
+	std::unique_ptr<matrix_wrap_impl<T>> diagonal() const override {
+		return std::make_unique<
+			concrete_matrix_wrap_impl<T,Diagonal<matrix_type>>
+			>(mat.diagonal());
+		}
+	
+	std::unique_ptr<matrix_wrap_impl<T>> diagonal_matrix() const override {
+		return std::make_unique<
+			concrete_matrix_wrap_impl<T,typename decltype(mat.diagonal_matrix())::matrix_type>
+			>(mat.diagonal_matrix());
+		}
+	*/
+	
+	
+	std::unique_ptr<iterator_impl<T>> begin() override {
+		return std::make_unique< 
+			concrete_nonconst_iterator_impl<T,
+				typename matrix_ref<T,Diagonal_matrix<decorated>>::const_iterator> 
+			> (mat.begin());
+	}
+	
+	std::unique_ptr<iterator_impl<T>> end() override {
+		return std::make_unique< 
+			concrete_nonconst_iterator_impl<T,
+				typename matrix_ref<T,Diagonal_matrix<decorated>>::const_iterator> 
+			> (mat.end());
+	}
+	
+	
+	std::unique_ptr<const_iterator_impl<T>> begin() const override {
+		return std::make_unique< 
+			concrete_const_iterator_impl<T,
+				typename matrix_ref<T,Diagonal_matrix<decorated>>::const_iterator> 
+			> (mat.begin());
+	}
+	std::unique_ptr<const_iterator_impl<T>> end() const override {
+		return std::make_unique< 
+			concrete_const_iterator_impl<T,
+				typename matrix_ref<T,Diagonal_matrix<decorated>>::const_iterator> 
+			> (mat.end());
+	}
+	
+	unsigned get_height() const override { return mat.get_height(); }
+	unsigned get_width() const override { return mat.get_width(); }
+	
+	concrete_matrix_wrap_impl(const matrix_ref<T,Diagonal_matrix<decorated>>& M) : mat(M) {}
+	
+	private:
+	matrix_ref<T,Diagonal_matrix<decorated>> mat;
+};
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -254,6 +387,9 @@ class matrix_wrap {
 	template<class matrix_type>
 	matrix_wrap(const matrix_ref<T,matrix_type>& M) : 
 		pimpl(std::make_unique<concrete_matrix_wrap_impl<T,matrix_type>>(M)) {}
+		
+	unsigned get_height() const { return pimpl->get_height(); }
+	unsigned get_width() const { return pimpl->get_width(); }
 	
 	private:
 	matrix_wrap(std::unique_ptr<matrix_wrap_impl<T>>&& impl) : pimpl(std::move(impl)) {}

@@ -25,11 +25,11 @@ public:
 	}
 	
 
-template<class Right>
+/*template<class Right>
 mMult<T,this_Type::Height,matrix_ref<T, Right>::Width> operator* (const matrix_ref<T, Right>& right) {
 	this->matrix_List.emplace_back(right); // adds right to the end of matrix_List
 	return *this;
-}
+}*/
 
 };
 
