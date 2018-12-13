@@ -39,69 +39,24 @@ for (int i = 0; i != 2; ++i) {
 		std::cout << A(i, j) << ' ';
 	std::cout << '\n';
 }
+
+std::cout << std::endl;
 std::cout << std::endl;
 
-//std::vector<matrix<int, 2, 2>> mts{A,A,A};
-//auto mults = resolveChain(mts);
+for (int i = 0; i != 2; ++i) {
+	for (int j = 0; j != 2; ++j)
+		std::cout << A(i, j) << ' ';
+	std::cout << '\n';
+}
+std::cout << std::endl;
+std::cout << std::endl;
+
 matrix<int> H = A * A ;
-
-
-
-A.transpose();
- /*
-auto C=B.window({1,4,1,4});
-std::cout << C(1,2) << ' ' << *(C.col_begin(2)) << ' ' << *++(C.col_begin(2)) << std::endl;
-for (int i=0; i!=3; ++i) {
-	for(int j=0; j!=3; ++j)
-		std::cout << C(i,j) << ' ';
+for (int i = 0; i < H.get_height(); ++i) {
+	for (int j = 0; j <H.get_width(); ++j)
+		std::cout << H(i, j) << ' ';
 	std::cout << '\n';
 }
-std::cout << std::endl;
-
-for (auto iter=C.col_begin(1); iter != C.col_end(1); ++iter)
-	std::cout << *iter << ' ';
-std::cout << "\n\n";
-
-auto D=C.diagonal();
-std::cout << D(1) << '=' << D.get_height() << 'x' << D.get_width() <<  std::endl;
-
-for (auto iter=D.begin(); iter != D.end(); ++iter)
-	std::cout << *iter << ' ';
-std::cout << "\n\n";
-
-auto E=D.diagonal_matrix();
-std::cout << E(1,2) << ' ' << E(2,2) << std::endl;
-
-for (auto iter=E.row_begin(1); iter != E.row_end(1); ++iter)
-	std::cout << *iter << ' ';
-std::cout << "\n\n============================\n\n";
-
-
-matrix<int> BC=B;
-
-B(1,2)=0;
-
-for (int i=0; i!=2; ++i) {
-	for(int j=0; j!=4; ++j)
-		std::cout << B(i,j) << ' ';
-	std::cout << '\n';
-}
-std::cout << std::endl;
-
-for (int i=0; i!=2; ++i) {
-	for(int j=0; j!=4; ++j)
-		std::cout << BC(i,j) << ' ';
-	std::cout << '\n';
-}
-std::cout << std::endl;
-
-for (int i=0; i!=4; ++i) {
-	for(int j=0; j!=2; ++j)
-		std::cout << A(i,j) << ' ';
-	std::cout << '\n';
-}
-std::cout << std::endl;
-return 0;*/
 }
 
 

@@ -252,8 +252,8 @@ class matrix_wrap {
 		unsigned h = get_height();
 		unsigned w = get_width();
 		matrix<T> res(h, w);
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
+		for (unsigned i = 0; i < h; i++) {
+			for (unsigned j = 0; j < w; j++) {
 				res(i, j) = operator() (i, j);
 			}
 		}

@@ -63,14 +63,13 @@ matrix<T> singleMultiplication(matrix<T>& a, matrix<T>& b) {
 /*-------------------------------------------------------
 		<given an optimal sequence resolve>
 ---------------------------------------------------------*/
-matrix<T> mult(std::vector<matrix_wrap<T>> A, std::vector<std::vector<int>> s, int i, int j) {
+matrix<T> multiplySubSequence(std::vector<matrix_wrap<T>> A, std::vector<std::vector<int>> s, int i, int j) {
 	if (i == j) {
-		matrix<int> r = A[i];
-		return r;
+		return A[i];
 	}
 	int k = s[i][j];
-	matrix<T> X = mult(A, s, i, k);
-	matrix<T> Y = mult(A, s, k + 1, j);
+	matrix<T> X = multiplySubSequence(A, s, i, k);
+	matrix<T> Y = multiplySubSequence(A, s, k + 1, j);
 	return singleMultiplication(X, Y);
 }
 /*-------------------------------------------------------
@@ -101,12 +100,12 @@ matrix<T> resolveChain(std::vector<matrix_wrap<T>> list) {
 	m.resize(n, std::vector<int>(n, 0));
 	s.resize(n, std::vector<int>(n, 0));
 	p = extractDims(list);
-	for (int L = 2; L < n; L++) {
-		for (int i = 1; i < n - L + 1; i++) {
-			int j = i + L - 1;
+	for (unsigned L = 2; L < n; L++) {
+		for (unsigned i = 1; i < n - L + 1; i++) {
+			unsigned j = i + L - 1;
 			m[i][j] = std::numeric_limits<int>::max();
-			for (int k = i; k <= j - 1; k++) {
-				int q = m[i][k] + m[k + 1][j] + p[i - 1 + 1] * p[k] * p[j];
+			for (unsigned k = i; k <= j - 1; k++) {
+				unsigned q = m[i][k] + m[k + 1][j] + p[i - 1 + 1] * p[k] * p[j];
 				if (q < m[i][j]) {
 					m[i][j] = q;
 					s[i][j] = k;
@@ -114,7 +113,7 @@ matrix<T> resolveChain(std::vector<matrix_wrap<T>> list) {
 			}
 		}
 	}
-	return mult(list, s, 0, n - 1);
+	return multiplySubSequence(list, s, 0, n - 1);
 }
 
 };
