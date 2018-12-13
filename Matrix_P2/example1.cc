@@ -9,15 +9,15 @@
 
 int main() {
 
-matrix<int> A(5,5);
-for (int i=0; i!=5; ++i)
-	for(int j=0; j!=5; ++j)
+matrix<int> A(2,2);
+for (int i=0; i!=2; ++i)
+	for(int j=0; j!=2; ++j)
 	  A(i,j) = i*10+j;
 
 //std::cout << A(1,2) << std::endl;
 
-for (int i=0; i!=5; ++i) {
-	for(int j=0; j!=5; ++j)
+for (int i=0; i!=2; ++i) {
+	for(int j=0; j!=2; ++j)
 		std::cout << A(i,j) << ' ';
 	std::cout << '\n';
 }
@@ -25,25 +25,28 @@ std::cout << std::endl;
 
 
 auto B=A.transpose();
-std::cout << B(1,2) << ' ' << *(B.begin()+1) << std::endl;
-for (int i=0; i!=5; ++i) {
-	for(int j=0; j!=5; ++j)
+std::cout << B(1,1) << ' ' << *(B.begin()+1) << std::endl;
+for (int i=0; i!=2; ++i) {
+	for(int j=0; j!=2; ++j)
 		std::cout << B(i,j) << ' ';
 	std::cout << '\n';
 }
 std::cout << std::endl;
 
 A = A.transpose() + A + A;
-for (int i = 0; i != 5; ++i) {
-	for (int j = 0; j != 5; ++j)
+for (int i = 0; i != 2; ++i) {
+	for (int j = 0; j != 2; ++j)
 		std::cout << A(i, j) << ' ';
 	std::cout << '\n';
 }
 std::cout << std::endl;
 
-//std::vector<matrix<int, 5, 5>> mts{A,A,A};
+//std::vector<matrix<int, 2, 2>> mts{A,A,A};
 //auto mults = resolveChain(mts);
-matrix<int> H = A * A*A.transpose();
+matrix<int> H = A * A ;
+
+
+
 A.transpose();
  /*
 auto C=B.window({1,4,1,4});
@@ -78,14 +81,14 @@ matrix<int> BC=B;
 
 B(1,2)=0;
 
-for (int i=0; i!=5; ++i) {
+for (int i=0; i!=2; ++i) {
 	for(int j=0; j!=4; ++j)
 		std::cout << B(i,j) << ' ';
 	std::cout << '\n';
 }
 std::cout << std::endl;
 
-for (int i=0; i!=5; ++i) {
+for (int i=0; i!=2; ++i) {
 	for(int j=0; j!=4; ++j)
 		std::cout << BC(i,j) << ' ';
 	std::cout << '\n';
@@ -93,7 +96,7 @@ for (int i=0; i!=5; ++i) {
 std::cout << std::endl;
 
 for (int i=0; i!=4; ++i) {
-	for(int j=0; j!=5; ++j)
+	for(int j=0; j!=2; ++j)
 		std::cout << A(i,j) << ' ';
 	std::cout << '\n';
 }

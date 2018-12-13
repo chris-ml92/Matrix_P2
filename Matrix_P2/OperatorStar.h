@@ -24,35 +24,32 @@ public:
 		matrix_List.emplace_back(m);
 	}
 	
-
 template<typename T, class Left, class Right>
 friend mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width>
 operator* (const matrix_ref<T, Left>& left, const matrix_ref<T, Right>& right);
 
-/*
-*
-* conversion Operator to Matrix
-*
-*/
 
+/*-------------------------------------------------------
+		<conversion Operator to Matrix>
+---------------------------------------------------------*/
 operator matrix<T>() {
-	
 
-	
 	return resolveChain(matrix_List);
-
-
 }
+/*-------------------------------------------------------
+		<MATRIX CHAIN MULTIPLICATION ALGORITHM>
+---------------------------------------------------------*/
 
-// Matric Chain Multiplication Algorithm !
+/*-------------------------------------------------------
+		<Multiplication of two matrices>
+---------------------------------------------------------*/
 
-// multiply two matrices
-matrix<T> singleMultiplication(matrix<T> a, matrix<T> b) {
-	int r1 = a.get_height(); // TODO: change magic numbers
+matrix<T> singleMultiplication(matrix<T>& a, matrix<T>& b) {
+	int r1 = a.get_height(); 
 	int r2 = b.get_height();
 	int c1 = a.get_width();
 	int c2 = b.get_width();
-	matrix<T> m(r1,c2);
+	matrix<T> m(r1,c2); 
 	for (int i = 0; i < r1; ++i)
 		for (int j = 0; j < c2; ++j)
 			for (int k = 0; k < c1; ++k)
@@ -61,7 +58,11 @@ matrix<T> singleMultiplication(matrix<T> a, matrix<T> b) {
 			}
 	return m;
 }
-// given an optimal sequence resolve
+
+
+/*-------------------------------------------------------
+		<given an optimal sequence resolve>
+---------------------------------------------------------*/
 matrix<T> mult(std::vector<matrix_wrap<T>> A, std::vector<std::vector<int>> s, int i, int j) {
 	if (i == j) {
 		matrix<int> r = A[i];
@@ -72,7 +73,9 @@ matrix<T> mult(std::vector<matrix_wrap<T>> A, std::vector<std::vector<int>> s, i
 	matrix<T> Y = mult(A, s, k + 1, j);
 	return singleMultiplication(X, Y);
 }
-// find dimensions of a list of matrices
+/*-------------------------------------------------------
+		<find dimensions of a list of matrices>
+---------------------------------------------------------*/
 std::vector<int> extractDims(std::vector<matrix_wrap<T>> list) {
 	int n = list.size();
 	std::vector<int> res;
@@ -84,7 +87,10 @@ std::vector<int> extractDims(std::vector<matrix_wrap<T>> list) {
 	res[n] = list[n - 1].get_width();
 	return res;
 }
-// find parentesis using dynamic algorithm
+
+/*-------------------------------------------------------
+		<find parentesis using dynamic algorithm>
+---------------------------------------------------------*/
 matrix<T> resolveChain(std::vector<matrix_wrap<T>> list) {
 	unsigned h = list.front().get_height();
 	unsigned w = list.back().get_width();
@@ -110,9 +116,6 @@ matrix<T> resolveChain(std::vector<matrix_wrap<T>> list) {
 	}
 	return mult(list, s, 0, n - 1);
 }
-
-// end matrix multiply
-
 
 };
 
