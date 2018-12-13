@@ -33,12 +33,12 @@ for (int i=0; i!=5; ++i) {
 }
 std::cout << std::endl;
 
-/*A = A.transpose() + A + A;
+A = A.transpose() + A + A;
 for (int i = 0; i != 5; ++i) {
 	for (int j = 0; j != 5; ++j)
 		std::cout << A(i, j) << ' ';
 	std::cout << '\n';
-}*/
+}
 std::cout << std::endl;
 
 //std::vector<matrix<int, 5, 5>> mts{A,A,A};

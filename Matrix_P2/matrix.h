@@ -683,6 +683,15 @@ public:
 		std::cerr << "matrix foreign constructor\n";
 	}
 
+	template<class E>
+	matrix<T>& operator=(const E& expre) {
+		for (unsigned i = 0; i < height; i++)
+			for (unsigned j = 0; j < width; j++)
+				data-> operator [](i*width + j) = expre(i, j);
+
+		return *this;
+	}
+
 	using matrix_ref<T, Plain>::Height;
 	using matrix_ref<T, Plain>::Width;
 
@@ -732,22 +741,6 @@ public:
 
 	template<class E>
 	matrix<T, W, H>& operator=(const E& expre) {
-		std::cout << typeid(expre).name() << std::endl;
-		//matrix<T,W,H> obj1;
-		matrix<T, W, H> obj;
-		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
-
-		auto expreTest = expre;
-		/*if (typeid(x).name() == typeid(obj1).name())
-			std::cout << "ok sono uguali" << std::endl;*/
-
-			//for multply:
-		auto l = [](auto x) -> auto {return x.getLeft(); };
-		std::vector<matrix<T, W, H>> matrices;
-		auto r = l(expre);
-		//while((auto r = l(expre)).isOperator()){
-			// matrices.push_back(r.getRight());
-		//}
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);
