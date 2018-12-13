@@ -39,7 +39,7 @@ operator matrix<T>() {
 	
 
 	
-	return doMult(matrix_List);
+	return resolveChain(matrix_List);
 
 
 }
@@ -47,7 +47,7 @@ operator matrix<T>() {
 // Matric Chain Multiplication Algorithm !
 
 // multiply two matrices
-matrix<T> matMult(matrix<T> a, matrix<T> b) {
+matrix<T> singleMultiplication(matrix<T> a, matrix<T> b) {
 	int r1 = a.get_height(); // TODO: change magic numbers
 	int r2 = b.get_height();
 	int c1 = a.get_width();
@@ -70,7 +70,7 @@ matrix<T> mult(std::vector<matrix_wrap<T>> A, std::vector<std::vector<int>> s, i
 	int k = s[i][j];
 	matrix<T> X = mult(A, s, i, k);
 	matrix<T> Y = mult(A, s, k + 1, j);
-	return matMult(X, Y);
+	return singleMultiplication(X, Y);
 }
 // find dimensions of a list of matrices
 std::vector<int> extractDims(std::vector<matrix_wrap<T>> list) {
@@ -85,7 +85,7 @@ std::vector<int> extractDims(std::vector<matrix_wrap<T>> list) {
 	return res;
 }
 // find parentesis using dynamic algorithm
-matrix<T> doMult(std::vector<matrix_wrap<T>> list) {
+matrix<T> resolveChain(std::vector<matrix_wrap<T>> list) {
 	unsigned h = list.front().get_height();
 	unsigned w = list.back().get_width();
 	matrix<T> result(h,w);
@@ -120,6 +120,13 @@ template<typename T, class Left, class Right>
 mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> operator* (const matrix_ref<T, Left>& left, const matrix_ref<T, Right>& right){
 	mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> chain;
 	chain.empl_back(left);
+	chain.empl_back(right);
+	return chain;
+}
+
+template<typename T, unsigned H, unsigned W, class Right>
+mMult<T, H, matrix_ref<T, Right>::Width> operator* (const mMult<T, H,W>&& left, const matrix_ref<T, Right>& right) {
+	mMult<T, H, matrix_ref<T, Right>::Width>  chain(std::move(left));
 	chain.empl_back(right);
 	return chain;
 }

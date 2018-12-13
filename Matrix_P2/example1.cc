@@ -42,8 +42,8 @@ for (int i = 0; i != 5; ++i) {
 std::cout << std::endl;
 
 //std::vector<matrix<int, 5, 5>> mts{A,A,A};
-//auto mults = doMult(mts);
-matrix<int> H = A * A;
+//auto mults = resolveChain(mts);
+matrix<int> H = A * A*A.transpose();
 A.transpose();
  /*
 auto C=B.window({1,4,1,4});
