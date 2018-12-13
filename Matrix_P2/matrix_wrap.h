@@ -151,6 +151,9 @@ struct matrix_wrap_impl {
 	virtual std::unique_ptr<iterator_impl<T>> end() = 0;
 	virtual std::unique_ptr<const_iterator_impl<T>> begin() const = 0; 
 	virtual std::unique_ptr<const_iterator_impl<T>> end() const = 0;
+
+	virtual unsigned get_height() const = 0;
+	virtual unsigned get_width() const = 0;
 };
 
 
@@ -192,7 +195,8 @@ class concrete_matrix_wrap_impl : public matrix_wrap_impl<T> {
 			>(mat.diagonal_matrix());
 		}
 	*/
-	
+	unsigned get_height() const override { return mat.get_height(); }
+	unsigned get_width() const override { return mat.get_width(); }
 	
 	std::unique_ptr<iterator_impl<T>> begin() override {
 		return std::make_unique< 
@@ -237,11 +241,25 @@ class matrix_wrap {
 	typedef T type;
 	typedef iterator_wrap<T> iterator;
 	typedef const_iterator_wrap<T> const_iterator;
-	
-	
+
+	unsigned get_height() const { return pimpl->get_height(); }
+	unsigned get_width() const { return pimpl->get_width(); }
+
 	T& operator ()(unsigned i, unsigned j) { return pimpl->get(i,j); }
 	const T& operator ()(unsigned i, unsigned j) const { return pimpl->get(i,j); }
-	
+	// cast a matrix wrap to a matrix
+	operator matrix<T>() {
+		unsigned h = get_height();
+		unsigned w = get_width();
+		matrix<T> res(h, w);
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				res(i, j) = operator() (i, j);
+			}
+		}
+		return res;
+	}
+
 	iterator begin() { return pimpl->begin(); }
 	iterator end() { return pimpl->end(); }
 	const_iterator begin() const { return pimpl->begin(); }

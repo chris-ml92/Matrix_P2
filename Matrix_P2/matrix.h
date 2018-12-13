@@ -16,6 +16,10 @@ template<typename T>
 class matrix_ref<T, Plain> {
 	public:
 	
+
+	static constexpr unsigned Height = 0;
+	static constexpr unsigned Width = 0;
+
 	//type members
 	typedef T type;
 	typedef Plain matrix_type;
@@ -84,6 +88,19 @@ class matrix_ref<T, Plain> {
 		return mSum<T, matrix_ref<T, Plain>, r>(*this, y);
 	}
 
+
+	/*Static get*/
+	template<unsigned Row, unsigned Col>
+	T& getValue() {
+		static_assert(Row < Height && Col < Width, "wrong sizes");
+		return operator()(Row, Col);
+	}
+	/*Static getValue()*/
+	template<unsigned Row, unsigned Col>
+	const T& getValue() const {
+		static_assert(Row < Height && Col < Width, "wrong sizes");
+		return operator()(Row, Col);
+	}
 
 	protected:
 	matrix_ref(){}
@@ -616,35 +633,95 @@ class matrix_ref<T, Diagonal_matrix<decorated>> : private matrix_ref<T, decorate
 
 
 
+template<typename T, unsigned... staticSizes> class matrix;
 
-template<typename T,unsigned W=1, unsigned H=1> 
-class matrix : public matrix_ref<T,staticSizes<H,W>> {
-	public:
-	
+template<typename T>
+class matrix<T> : public matrix_ref<T, Plain> {
+public:
+
+	matrix(unsigned height, unsigned width) {
+		this->height = height;
+		this->width = width;
+		data = std::make_shared<std::vector<T>>(width*height);
+
+		std::cerr << "matrix constructor\n";
+	}
+
+	matrix(const matrix<T>& X) {
+		height = X.height;
+		width = X.width;
+		data = std::make_shared<std::vector<T>>(width*height);
+		*data = *(X.data);
+
+		std::cerr << "matrix copy constructor\n";
+	}
+
+	/*	matrix(matrix<T>&& X) {
+			height = X.height;
+			width = X.width;
+			data = std::move(X.data);
+
+			std::cerr << "matrix move constructor\n";
+		}*/
+
+	template<class matrix_type>
+	matrix(const matrix_ref<T, matrix_type>&X) {
+		height = X.get_height();
+		width = X.get_width();
+		data = std::make_shared<std::vector<T>>(width*height);
+		//copy does not work as my row_iterators do not provide all the facilities of iterators
+		//std::copy(X.row_begin(0),X.row_begin(height),data->begin());
+		auto source = X.row_begin(0);
+		const auto end = X.row_begin(height);
+		auto dest = data->begin();
+		while (source != end) {
+			*dest = *source;
+			++dest;
+			++source;
+		}
+
+		std::cerr << "matrix foreign constructor\n";
+	}
+
+	using matrix_ref<T, Plain>::Height;
+	using matrix_ref<T, Plain>::Width;
+
+private:
+	using matrix_ref<T, Plain>::height;
+	using matrix_ref<T, Plain>::width;
+	using matrix_ref<T, Plain>::data;
+
+};
+
+
+template<typename T, unsigned W , unsigned H >
+class matrix<T,W,H> : public matrix_ref<T, staticSizes<H, W>> {
+public:
+
 	matrix() {
 		this->height = H;
 		this->width = W;
 		data = std::make_shared<std::vector<T>>(H*W);
 	}
-	
+
 	matrix(const matrix<T>&X) {
 		height = X.height;
 		width = X.width;
 		data = std::make_shared<std::vector<T>>(width*height);
 		*data = *(X.data);
 	}
-	
+
 	template<class matrix_type>
-	matrix(const matrix_ref<T,matrix_type>&X) {
+	matrix(const matrix_ref<T, matrix_type>&X) {
 		height = X.get_height();
 		width = X.get_width();
 		data = std::make_shared<std::vector<T>>(width*height);
 		//copy does not work as my row_iterators do not provide all the facilities of iterators
 		//std::copy(X.row_begin(0),X.row_begin(height),data->begin());
-		auto source=X.row_begin(0);
-		const auto end=X.row_begin(height);
-		auto dest=data->begin();
-		while (source!=end) {
+		auto source = X.row_begin(0);
+		const auto end = X.row_begin(height);
+		auto dest = data->begin();
+		while (source != end) {
 			*dest = *source;
 			++dest;
 			++source;
@@ -654,19 +731,19 @@ class matrix : public matrix_ref<T,staticSizes<H,W>> {
 
 
 	template<class E>
-	matrix<T,W,H>& operator=(const E& expre) {
+	matrix<T, W, H>& operator=(const E& expre) {
 		std::cout << typeid(expre).name() << std::endl;
 		//matrix<T,W,H> obj1;
-		matrix<T,W,H> obj;
+		matrix<T, W, H> obj;
 		auto x = expre.getRight(); // from the example get_Right should return the last matrix in this case /*** maybe a recursive function + list will do for product?.
-		
+
 		auto expreTest = expre;
 		/*if (typeid(x).name() == typeid(obj1).name())
 			std::cout << "ok sono uguali" << std::endl;*/
-		
-		//for multply:
+
+			//for multply:
 		auto l = [](auto x) -> auto {return x.getLeft(); };
-		std::vector<matrix<T,W,H>> matrices;
+		std::vector<matrix<T, W, H>> matrices;
 		auto r = l(expre);
 		//while((auto r = l(expre)).isOperator()){
 			// matrices.push_back(r.getRight());
@@ -680,11 +757,12 @@ class matrix : public matrix_ref<T,staticSizes<H,W>> {
 
 
 
-	private:
+private:
 	using matrix_ref<T, staticSizes<H, W>>::height;
 	using matrix_ref<T, staticSizes<H, W>>::width;
 	using matrix_ref<T, staticSizes<H, W>>::data;
 
 };
+
 
 #endif //_MATRIX_H_
