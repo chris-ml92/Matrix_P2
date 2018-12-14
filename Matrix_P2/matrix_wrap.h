@@ -247,6 +247,9 @@ class matrix_wrap {
 
 	T& operator ()(unsigned i, unsigned j) { return pimpl->get(i,j); }
 	const T& operator ()(unsigned i, unsigned j) const { return pimpl->get(i,j); }
+	
+	
+	
 	// cast a matrix wrap to a matrix
 	operator matrix<T>() {
 		unsigned h = get_height();
@@ -257,10 +260,12 @@ class matrix_wrap {
 				res(i, j) = operator() (i, j);
 			}
 		}
-		std::cout << "wrap to matrix conversion causes a: ";
+		std::cout << "wrap to matrix conversion\n";
 		return res;
 	}
 
+	
+	
 	iterator begin() { return pimpl->begin(); }
 	iterator end() { return pimpl->end(); }
 	const_iterator begin() const { return pimpl->begin(); }

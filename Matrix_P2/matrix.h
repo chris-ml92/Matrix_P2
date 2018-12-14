@@ -8,7 +8,6 @@
 #include"matrix_fwd.h"
 #include"iterators.h"
 #include"OperatorPlus.h"
-//#include"OperatorStar.h"
 
 
 
@@ -89,7 +88,7 @@ class matrix_ref<T, Plain> {
 	}
 
 
-	/*Static get*/
+	/*Static getValue()*/
 	template<unsigned Row, unsigned Col>
 	T& getValue() {
 		static_assert(Row < Height && Col < Width, "wrong sizes");
@@ -183,17 +182,6 @@ public:
 	mSum<T, matrix_ref<T, staticSizes<H, W>>, r> operator+(const r& y) {
 		return mSum<T, matrix_ref<T, staticSizes<H, W>>, r>(*this, y);
 	}
-
-	/*
-	*
-	*
-	* @Operator *
-	*
-	*/
-	/*template<typename r>
-	auto operator*(const matrix_ref<T, r>& y) {
-		return mMult<T>(*this,y);
-	}*/
 
 	/*Static get*/
 	template<unsigned Row, unsigned Col>
@@ -656,13 +644,12 @@ public:
 		std::cerr << "matrix copy constructor\n";
 	}
 
-	/*	matrix(matrix<T>&& X) {
+	matrix(matrix<T>&& X) {
 			height = X.height;
 			width = X.width;
 			data = std::move(X.data);
-
-			std::cerr << "matrix move constructor\n";
-		}*/
+			//std::cerr << "move constructor to avoid copy\n";
+		}
 
 	template<class matrix_type>
 	matrix(const matrix_ref<T, matrix_type>&X) {
@@ -720,6 +707,13 @@ public:
 		width = X.width;
 		data = std::make_shared<std::vector<T>>(width*height);
 		*data = *(X.data);
+	}
+	
+	matrix(matrix<T>&& X) {
+		height = X.height;
+		width = X.width;
+		data = std::move(X.data);
+		//std::cerr << "move constructor to avoid copy\n";
 	}
 
 	template<class matrix_type>
