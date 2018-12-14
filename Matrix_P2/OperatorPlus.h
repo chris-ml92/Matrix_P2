@@ -50,7 +50,8 @@ public:
 		return mSum<T, thisType, r>(*this, y);
 	}
 
-
+	unsigned get_height() const { return rightRef.get_height(); }
+	unsigned get_width() const {  return rightRef.get_width(); }
 };
 
 

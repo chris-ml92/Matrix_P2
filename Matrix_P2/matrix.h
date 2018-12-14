@@ -684,12 +684,14 @@ public:
 	}
 
 	template<class E>
-	matrix<T>& operator=(const E& expre) {
+	matrix(const E& expre) {
+		height = expre.get_height();
+		width = expre.get_width();
+		data = std::make_shared<std::vector<T>>(width*height);
+
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);
-
-		return *this;
 	}
 
 	using matrix_ref<T, Plain>::Height;
@@ -740,12 +742,14 @@ public:
 
 
 	template<class E>
-	matrix<T, W, H>& operator=(const E& expre) {
+	matrix(const E& expre) {
+		height = expre.get_height();
+		width = expre.get_width();
+		data = std::make_shared<std::vector<T>>(width*height);
+
 		for (unsigned i = 0; i < height; i++)
 			for (unsigned j = 0; j < width; j++)
 				data-> operator [](i*width + j) = expre(i, j);
-
-		return *this;
 	}
 
 
