@@ -132,7 +132,7 @@ template<typename T, class Left, class Right>
 mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> operator* (const matrix_ref<T, Left>& left, const matrix_ref<T, Right>& right){
 	
 	////////////////////////////////////////////////////////////////////////
-	static_assert(left::Width==right::Height)
+	static_assert(left::Width==right::Height, "wrong sizes");
 	///////////////////////////////////////////////////////////////////////
 	
 	mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> chain;
@@ -145,7 +145,7 @@ template<typename T, unsigned H, unsigned W, class Right>
 mMult<T, H, matrix_ref<T, Right>::Width> operator* (const mMult<T, H,W>&& left, const matrix_ref<T, Right>& right) {
 
 	//////////////////////////////////////////////////////////////////////
-	static_assert(W==right::Height)
+	static_assert(W==right::Height, "wrong sizes");
 	/////////////////////////////////////////////////////////////////////
 
 	mMult<T, H, matrix_ref<T, Right>::Width>  chain(std::move(left));
