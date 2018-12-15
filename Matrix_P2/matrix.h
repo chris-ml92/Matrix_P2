@@ -1,3 +1,8 @@
+// Authors
+// Christian Bernabe Cabrera (843382)
+// Francesco Busolin (851884)
+// Gabriele Acerbi (877653)
+
 #ifndef _MATRIX_H_
 #define _MATRIX_H_
 
@@ -84,6 +89,11 @@ class matrix_ref<T, Plain> {
 	*/
 	template<typename r>
 	mSum<T, matrix_ref<T,Plain>, r> operator+(const r& y) {
+		
+		/////////////////////////////////////////////////////
+		assert(this->get_height()==y.get_height() && this->get_width()==y.get_width());
+		/////////////////////////////////////////////////////
+		
 		return mSum<T, matrix_ref<T, Plain>, r>(*this, y);
 	}
 
@@ -180,6 +190,9 @@ public:
 	*/
 	template<typename r>
 	mSum<T, matrix_ref<T, staticSizes<H, W>>, r> operator+(const r& y) {
+		/////////////////////////////////////////////////////
+		assert(H==y.get_height() && W==y.get_width());
+		/////////////////////////////////////////////////////
 		return mSum<T, matrix_ref<T, staticSizes<H, W>>, r>(*this, y);
 	}
 
