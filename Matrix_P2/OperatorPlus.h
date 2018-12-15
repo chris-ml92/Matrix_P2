@@ -1,3 +1,8 @@
+// Authors
+// Christian Bernabe Cabrera (843382)
+// Francesco Busolin (851884)
+// Gabriele Acerbi (877653)
+
 #ifndef OPERATORPLUS_H
 #define OPERATORPLUS_H
 #include <type_traits>
