@@ -1,3 +1,8 @@
+// Authors
+// Christian Bernabe Cabrera (843382)
+// Francesco Busolin (851884)
+// Gabriele Acerbi (877653)
+
 #ifndef OPERATORSTAR_H
 #define OPERATORSTAR_H
 #include"matrix.h"
@@ -49,6 +54,11 @@ matrix<T> singleMultiplication(matrix<T>& a, matrix<T>& b) {
 	int r2 = b.get_height();
 	int c1 = a.get_width();
 	int c2 = b.get_width();
+	
+	///////////////////////////////////////////////////////
+	assert(c1==r2);
+	///////////////////////////////////////////////////////
+	
 	matrix<T> m(r1,c2); 
 	for (int i = 0; i < r1; ++i)
 		for (int j = 0; j < c2; ++j)
@@ -120,6 +130,11 @@ matrix<T> resolveChain(std::vector<matrix_wrap<T>> list) {
 
 template<typename T, class Left, class Right>
 mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> operator* (const matrix_ref<T, Left>& left, const matrix_ref<T, Right>& right){
+	
+	////////////////////////////////////////////////////////////////////////
+	static_assert(left::Width==right::Height)
+	///////////////////////////////////////////////////////////////////////
+	
 	mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> chain;
 	chain.empl_back(left);
 	chain.empl_back(right);
@@ -128,6 +143,11 @@ mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> operator* (co
 
 template<typename T, unsigned H, unsigned W, class Right>
 mMult<T, H, matrix_ref<T, Right>::Width> operator* (const mMult<T, H,W>&& left, const matrix_ref<T, Right>& right) {
+
+	//////////////////////////////////////////////////////////////////////
+	static_assert(W==right::Height)
+	/////////////////////////////////////////////////////////////////////
+
 	mMult<T, H, matrix_ref<T, Right>::Width>  chain(std::move(left));
 	chain.empl_back(right);
 	return chain;
