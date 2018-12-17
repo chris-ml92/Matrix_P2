@@ -39,8 +39,7 @@ operator matrix<T>() {
 }
 
 operator matrix<T,W,H>() {
-
-	return resolveChain(matrix_List);
+	 return resolveChain(matrix_List);
 }
 
 /*-------------------------------------------------------
@@ -127,6 +126,8 @@ matrix<T> resolveChain(std::vector<matrix_wrap<T>> list) {
 	}
 	return multiplySubSequence(list, s, 0, n - 1);
 }
+
+
 
 };
 

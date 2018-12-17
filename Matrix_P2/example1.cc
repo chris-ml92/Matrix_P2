@@ -26,7 +26,11 @@ for (int i=0; i!=2; ++i) {
 std::cout << std::endl;
 
 
-matrix<int,2,2> B=A.transpose();
+matrix<int,2,2> B;
+for (int i = 0; i != 2; ++i)
+for (int j = 0; j != 2; ++j)
+B(i, j) = i + 1;
+
 for (int i=0; i!=2; ++i) {
 	for(int j=0; j!=2; ++j)
 		std::cout << B(i,j) << ' ';

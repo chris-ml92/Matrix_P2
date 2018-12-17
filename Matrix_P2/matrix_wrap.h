@@ -145,7 +145,7 @@ struct matrix_wrap_impl {
 	virtual std::unique_ptr<matrix_wrap_impl<T>> clone() const = 0;
 	virtual ~matrix_wrap_impl() {}
 	
-	virtual std::unique_ptr<matrix_wrap_impl<T>> transpose() const = 0;
+//	virtual std::unique_ptr<matrix_wrap_impl<T>> transpose() const = 0;
 	
 	//will not work: cyclic type expansion!
 	//virtual std::unique_ptr<matrix_wrap_impl<T>> window(window_spec) const = 0;
@@ -174,11 +174,11 @@ class concrete_matrix_wrap_impl : public matrix_wrap_impl<T> {
 		return std::make_unique<concrete_matrix_wrap_impl<T,matrix_type>>(mat);
 	}
 	
-	std::unique_ptr<matrix_wrap_impl<T>> transpose() const override {
+	/*std::unique_ptr<matrix_wrap_impl<T>> transpose() const override {
 		return std::make_unique<
 			concrete_matrix_wrap_impl<T,typename decltype(mat.transpose())::matrix_type>
 			>(mat.transpose());
-	}
+	}*/
 
 	//will not work: cyclic type expansion!
 	/*
@@ -256,7 +256,7 @@ class matrix_wrap {
 	
 	
 	// cast a matrix wrap to a matrix
-	/*operator matrix<T>() {
+	operator matrix<T>() {
 		unsigned h = get_height();
 		unsigned w = get_width();
 		matrix<T> res(h, w);
@@ -267,13 +267,13 @@ class matrix_wrap {
 		}
 		std::cout << "wrap to matrix conversion\n";
 		return res;
-	}*/
+	}
 
-	template <unsigned H, unsigned W>
+	/*template <unsigned H, unsigned W>
 	operator matrix<T,W,H>() {
-		unsigned h = get_height();
-		unsigned w = get_width();
-		matrix<T, W, H> res;
+		unsigned h = H;
+		unsigned w = W;
+		matrix<T, w, h > res;
 		for (unsigned i = 0; i < h; i++) {
 			for (unsigned j = 0; j < w; j++) {
 				res(i, j) = operator() (i, j);
@@ -281,7 +281,7 @@ class matrix_wrap {
 		}
 		std::cout << "wrap to matrix conversion\n";
 		return res;
-	}
+	}*/ // no needed
 
 	
 	
