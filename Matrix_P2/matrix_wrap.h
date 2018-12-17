@@ -256,10 +256,24 @@ class matrix_wrap {
 	
 	
 	// cast a matrix wrap to a matrix
-	operator matrix<T>() {
+	/*operator matrix<T>() {
 		unsigned h = get_height();
 		unsigned w = get_width();
 		matrix<T> res(h, w);
+		for (unsigned i = 0; i < h; i++) {
+			for (unsigned j = 0; j < w; j++) {
+				res(i, j) = operator() (i, j);
+			}
+		}
+		std::cout << "wrap to matrix conversion\n";
+		return res;
+	}*/
+
+	template <unsigned H, unsigned W>
+	operator matrix<T,W,H>() {
+		unsigned h = get_height();
+		unsigned w = get_width();
+		matrix<T, W, H> res;
 		for (unsigned i = 0; i < h; i++) {
 			for (unsigned j = 0; j < w; j++) {
 				res(i, j) = operator() (i, j);

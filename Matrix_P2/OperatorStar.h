@@ -6,8 +6,6 @@
 #ifndef OPERATORSTAR_H
 #define OPERATORSTAR_H
 #include"matrix.h"
-//#include"matrix_wrap.h"
-#include<list>
 
 
 template<typename T, unsigned H=1, unsigned W=1>
@@ -21,8 +19,6 @@ public:
 	typedef mMult<T, H, W> this_Type;
 	static constexpr unsigned Height = H;
 	static constexpr unsigned Width = W;
-	
-	//friend mMult<T,matrix_ref<T,Left>> 
 	
 	template<class matrix_class>
 	void empl_back(matrix_ref<T, matrix_class> m){
@@ -41,6 +37,12 @@ operator matrix<T>() {
 
 	return resolveChain(matrix_List);
 }
+
+operator matrix<T,W,H>() {
+
+	return resolveChain(matrix_List);
+}
+
 /*-------------------------------------------------------
 		<MATRIX CHAIN MULTIPLICATION ALGORITHM>
 ---------------------------------------------------------*/
@@ -132,7 +134,7 @@ template<typename T, class Left, class Right>
 mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> operator* (const matrix_ref<T, Left>& left, const matrix_ref<T, Right>& right){
 	
 	////////////////////////////////////////////////////////////////////////
-	static_assert(left::Width==right::Height, "wrong sizes");
+	static_assert(matrix_ref<T, Left>::Width == matrix_ref<T, Right>::Height, "wrong sizes");
 	///////////////////////////////////////////////////////////////////////
 	
 	mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width> chain;
@@ -145,7 +147,7 @@ template<typename T, unsigned H, unsigned W, class Right>
 mMult<T, H, matrix_ref<T, Right>::Width> operator* (const mMult<T, H,W>&& left, const matrix_ref<T, Right>& right) {
 
 	//////////////////////////////////////////////////////////////////////
-	static_assert(W==right::Height, "wrong sizes");
+	static_assert(W == matrix_ref<T, Right>::Height, "wrong sizes");
 	/////////////////////////////////////////////////////////////////////
 
 	mMult<T, H, matrix_ref<T, Right>::Width>  chain(std::move(left));

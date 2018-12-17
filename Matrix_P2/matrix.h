@@ -299,7 +299,7 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	*/
 	template<unsigned Row, unsigned Col>
 	T& getValue() {
-		static_assert(Row < Height && Col && Height!=0 < Width, "wrong sizes");
+		static_assert( (Row < Height) && (Col < Width) &&  (Height!=0), "wrong sizes");
 		return base::template get<Col,Row>();
 	}
 	/*
@@ -311,7 +311,7 @@ class matrix_ref<T, Transpose<decorated>> : private matrix_ref<T, decorated> {
 	*/
 	template<unsigned Row, unsigned Col>
 	const T& getValue() const {
-		static_assert(Row < Height && Col && Height != 0 < Width, "wrong sizes");
+		static_assert((Row < Height) && (Col < Width) && (Height != 0), "wrong sizes");
 		return base::template get<Col, Row>();
 	}
 	
@@ -715,14 +715,14 @@ public:
 		data = std::make_shared<std::vector<T>>(H*W);
 	}
 
-	matrix(const matrix<T>&X) {
+	matrix(const matrix<T,W,H>&X) {
 		height = X.height;
 		width = X.width;
 		data = std::make_shared<std::vector<T>>(width*height);
 		*data = *(X.data);
 	}
 	
-	matrix(matrix<T>&& X) {
+	matrix(matrix<T,W,H>&& X) {
 		height = X.height;
 		width = X.width;
 		data = std::move(X.data);
