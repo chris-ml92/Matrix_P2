@@ -705,8 +705,8 @@ private:
 };
 
 
-template<typename T, unsigned W , unsigned H >
-class matrix<T,W,H> : public matrix_ref<T, staticSizes<H, W>> {
+template<typename T, unsigned H , unsigned W >
+class matrix<T,H,W> : public matrix_ref<T, staticSizes<H, W>> {
 public:
 
 	matrix() {
@@ -715,14 +715,14 @@ public:
 		data = std::make_shared<std::vector<T>>(H*W);
 	}
 
-	matrix(const matrix<T,W,H>&X) {
+	matrix(const matrix<T,H,W>&X) {
 		height = X.height;
 		width = X.width;
 		data = std::make_shared<std::vector<T>>(width*height);
 		*data = *(X.data);
 	}
 	
-	matrix(matrix<T,W,H>&& X) {
+	matrix(matrix<T,H,W>&& X) {
 		height = X.height;
 		width = X.width;
 		data = std::move(X.data);
