@@ -19,6 +19,13 @@ public:
 	typedef mMult<T, H, W> this_Type;
 	static constexpr unsigned Height = H;
 	static constexpr unsigned Width = W;
+
+	unsigned get_width() {
+		return Width;
+	}
+	unsigned get_height() {
+		return Height;
+	}
 	
 	template<class matrix_class>
 	void empl_back(matrix_ref<T, matrix_class> m){
@@ -38,7 +45,7 @@ operator matrix<T>() {
 	return resolveChain(matrix_List);
 }
 
-operator matrix<T,W,H>() {
+operator matrix<T,H,W>() {
 	 return resolveChain(matrix_List);
 }
 

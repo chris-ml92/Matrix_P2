@@ -683,8 +683,8 @@ public:
 		std::cerr << "matrix foreign constructor\n";
 	}
 
-	template<class E>
-	matrix(const E& expre) {
+	template<class L,class R>
+	matrix(const mSum<T,L,R>& expre) {
 		height = expre.get_height();
 		width = expre.get_width();
 		data = std::make_shared<std::vector<T>>(width*height);
@@ -759,8 +759,8 @@ public:
 
 
 
-	template<class E>
-	matrix(const E& expre) {
+	template<class L,class R>
+	matrix(const mSum<T,L,R>& expre) {
 		height = expre.get_height();
 		width = expre.get_width();
 		data = std::make_shared<std::vector<T>>(width*height);

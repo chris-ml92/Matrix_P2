@@ -142,7 +142,7 @@ NSS.printMatrix();
 std::cout << std::endl;
 
 
-/*std::cout << std::endl << "/////NON SQUARE MULT <3,5> * <5,4> * <4,5>/////" << std::endl << std::endl;
+std::cout << std::endl << "/////NON SQUARE MULT <3,5> * <5,4> * <4,5>/////" << std::endl << std::endl;
 
 G.printMatrix();
 std::cout << std::endl;
@@ -163,10 +163,10 @@ for (int i=0; i!=4; i++)
 K.printMatrix();
 std::cout << std::endl;
 
-matrix<int,3,5> NSM = G*J*K;
+matrix<int,3,4> NSM = G*J;
 
 NSM.printMatrix();
-std::cout << std::endl;*/
+std::cout << std::endl;
 
 
 /*std::cout << std::endl << "/////CHAIN OP (<3,3> + <3,3>) * (<3,3> + <3,3>)/////" << std::endl << std::endl;
