@@ -12,30 +12,23 @@
 
 int main() {
 
-matrix<int,2,2> A;
-for (int i=0; i!=2; ++i)
-	for(int j=0; j!=2; ++j)
-	  A(i,j) = i+1;
+matrix<int,3,3> A;
+for (int i=0; i!=3; i++)
+	for(int j=0; j!=3; j++)
+	  A(i,j) = i + j ;
 
 
-for (int i=0; i!=2; ++i) {
-	for(int j=0; j!=2; ++j)
-		std::cout << A(i,j) << ' ';
-	std::cout << '\n';
-}
+A.printMatrix();
 std::cout << std::endl;
 
 
-matrix<int,2,2> B;
-for (int i = 0; i != 2; ++i)
-for (int j = 0; j != 2; ++j)
-B(i, j) = i + 1;
+matrix<int,3,3> B = A;
 
-for (int i=0; i!=2; ++i) {
-	for(int j=0; j!=2; ++j)
-		std::cout << B(i,j) << ' ';
-	std::cout << '\n';
-}
+matrix<int, 3, 3 > C ;
+for (int i = 0; i != 3; ++i)
+	for (int j = 0; j != 3; ++j)
+		C(i, j) = 1;
+
 std::cout << std::endl;
 
 /*
@@ -60,12 +53,9 @@ std::cout << std::endl;
 std::cout << std::endl<<"Matrix multiplication begins\n\n";
 
 
-matrix<int,2,2> X = A * B;
-for (int i = 0; i < 2; i++) {
-	for (int j = 0; j < 2; j++)
-		std::cout << X(i, j) << ' ';
-	std::cout << '\n';
-}
+matrix<int,3,3> X = A ;
+std::cout << X.getValue<1, 1>() << std::endl;
+X.printMatrix();
 
 }
 

@@ -101,13 +101,13 @@ class matrix_ref<T, Plain> {
 	/*Static getValue()*/
 	template<unsigned Row, unsigned Col>
 	T& getValue() {
-		static_assert(Row < Height && Col < Width, "wrong sizes");
+		//static_assert(Row < Height && Col < Width, "wrong sizes");
 		return operator()(Row, Col);
 	}
 	/*Static getValue()*/
 	template<unsigned Row, unsigned Col>
 	const T& getValue() const {
-		static_assert(Row < Height && Col < Width, "wrong sizes");
+		//static_assert(Row < Height && Col < Width, "wrong sizes");
 		return operator()(Row, Col);
 	}
 
@@ -694,6 +694,17 @@ public:
 				data-> operator [](i*width + j) = expre(i, j);
 	}
 
+	void printMatrix() const {
+		for (unsigned i = 0; i < height; i++) {
+			for (unsigned j = 0; j < width; j++)
+				std::cout << (data->operator[](i*width + j)) << " ";
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+	}
+
+
+
 	using matrix_ref<T, Plain>::Height;
 	using matrix_ref<T, Plain>::Width;
 
@@ -759,7 +770,14 @@ public:
 				data-> operator [](i*width + j) = expre(i, j);
 	}
 
-
+	void printMatrix() const {
+		for (unsigned i = 0; i < height; i++) {
+			for (unsigned j = 0; j < width; j++)
+				std::cout << (data->operator[](i*width + j)) << " ";
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+	}
 
 private:
 	using matrix_ref<T, staticSizes<H, W>>::height;
