@@ -169,7 +169,7 @@ NSM.printMatrix();
 std::cout << std::endl;
 
 
-/*std::cout << std::endl << "/////CHAIN OP (<3,3> + <3,3>) * (<3,3> + <3,3>)/////" << std::endl << std::endl;
+/*std::cout << std::endl << "/////CHAIN OP (<3,3> + <3,3>) * (<3,3> + <3,3>)/////" << std::endl << std::endl; DOES NOT WORK
 
 A.printMatrix();
 std::cout << std::endl;

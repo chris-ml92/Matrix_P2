@@ -14,7 +14,7 @@ class mMult {
 private:
 	mMult() = default;
 	template<unsigned NW>
-	mMult(mMult<T, H, NW>&& X) : matrix_List(std::move(X.getList())) {}
+	mMult(mMult<T, H, NW>&& X) : matrix_List(std::move(X._getListRef())) {}
 	   
 		/*------------------------------------------------------ -
 		<MATRIX CHAIN MULTIPLICATION ALGORITHM>
@@ -112,7 +112,11 @@ public:
 	static constexpr unsigned Height = H;
 	static constexpr unsigned Width = W;
 	
-	std::vector<matrix_wrap<T>> getList() { return matrix_List; } // bad but necessary
+	/*
+		Internal function used in move constructor, please avoid using it.
+		High risk of dangling reference
+	*/
+	std::vector<matrix_wrap<T>>& _getListRef() { return matrix_List; }
 	
 	unsigned get_width() {
 		return matrix_List.front().get_width();
