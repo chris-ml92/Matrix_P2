@@ -163,7 +163,7 @@ for (int i=0; i!=4; i++)
 K.printMatrix();
 std::cout << std::endl;
 
-matrix<int,3,4> NSM = G*J;
+matrix<int,3,5> NSM = G*J*K;
 
 NSM.printMatrix();
 std::cout << std::endl;
