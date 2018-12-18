@@ -25,9 +25,9 @@ public:
 		matrix_List.emplace_back(m);
 	}
 	
-template<typename T, class Left, class Right>
-friend mMult<T, matrix_ref<T, Left>::Height, matrix_ref<T, Right>::Width>
-operator* (const matrix_ref<T, Left>& left, const matrix_ref<T, Right>& right);
+template<typename U, class Left, class Right>
+friend mMult<U, matrix_ref<U, Left>::Height, matrix_ref<U, Right>::Width>
+operator* (const matrix_ref<U, Left>& left, const matrix_ref<U, Right>& right);
 
 
 /*-------------------------------------------------------
