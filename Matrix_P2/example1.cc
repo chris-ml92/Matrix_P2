@@ -56,6 +56,8 @@ std::cout << std::endl<<"Matrix multiplication begins\n\n";
 matrix<int,3,3> X = A ;
 std::cout << X.getValue<1, 1>() << std::endl;
 X.printMatrix();
+	
+return 0;
 
 }
 
