@@ -15,6 +15,11 @@ private:
 	mMult() = default;
 	template<unsigned NW>
 	mMult(mMult<T, H, NW>&& X) : matrix_List(std::move(X._getListRef())) {}
+
+	template<class matrix_class>
+	void empl_back(matrix_ref<T, matrix_class> m) {
+		matrix_List.emplace_back(m);
+	}
 	   
 		/*------------------------------------------------------ -
 		<MATRIX CHAIN MULTIPLICATION ALGORITHM>
@@ -123,13 +128,7 @@ public:
 	}
 	unsigned get_height() {
 		return matrix_List.back().get_height();
-	}
-	
-	template<class matrix_class>
-	void empl_back(matrix_ref<T, matrix_class> m){
-		matrix_List.emplace_back(m);
-	}
-	
+	}	
 	template<typename U, class Left, class Right>
 	friend mMult<U, matrix_ref<U, Left>::Height, matrix_ref<U, Right>::Width>
 	operator* (const matrix_ref<U, Left>& left, const matrix_ref<U, Right>& right);
@@ -140,19 +139,17 @@ public:
 
 
 
-/*-------------------------------------------------------
-		<conversion Operator to Matrix>
----------------------------------------------------------*/
-operator matrix<T>() {
+	/*-------------------------------------------------------
+			<conversion Operator to Matrix>
+	---------------------------------------------------------*/
+	operator matrix<T>() {
 
-	return resolveChain(matrix_List);
-}
+		return resolveChain(matrix_List);
+	}
 
-operator matrix<T,H,W>() {
-	 return resolveChain(matrix_List);
-}
-
-
+	operator matrix<T,H,W>() {
+		 return resolveChain(matrix_List);
+	}
 };
 
 template<typename T, class Left, class Right>
