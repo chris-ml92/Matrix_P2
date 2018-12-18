@@ -136,7 +136,7 @@ for (int i=0; i!=3; i++)
 I.printMatrix();
 std::cout << std::endl;
 
-matrix<int> NSS = G+H+I;
+matrix<int,3,5> NSS = G+H+I;
 
 NSS.printMatrix();
 std::cout << std::endl;
@@ -163,7 +163,7 @@ for (int i=0; i!=4; i++)
 K.printMatrix();
 std::cout << std::endl;
 
-matrix<int> NSM = G*J*K;
+matrix<int,3,5> NSM = G*J*K;
 
 NSM.printMatrix();
 std::cout << std::endl;*/
