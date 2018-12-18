@@ -188,7 +188,7 @@ for (int i=0; i!=3; i++)
 L.printMatrix();
 std::cout << std::endl;
 
-matrix<int,3,3> CH = A+B*C+L;
+matrix<int,3,3> CH = (A+B)*(C+L);
 
 CH.printMatrix();
 std::cout << std::endl;*/
