@@ -265,7 +265,7 @@ class matrix_wrap {
 				res(i, j) = operator() (i, j);
 			}
 		}
-		std::cout << "wrap to matrix conversion\n";
+		//std::cout << "wrap to matrix conversion\n";
 		return res;
 	}
 

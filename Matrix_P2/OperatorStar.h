@@ -55,7 +55,7 @@ private:
 	---------------------------------------------------------*/
 	matrix<T> multiplySubSequence(std::vector<matrix_wrap<T>> A, std::vector<std::vector<int>> s, int i, int j) {
 		if (i == j) {
-			return A[i];
+			return A[i]; //uses matrix_wrap operator conversion to matrix
 		}
 		int k = s[i][j];
 		matrix<T> X = multiplySubSequence(A, s, i, k);

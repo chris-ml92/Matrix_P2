@@ -645,7 +645,7 @@ public:
 		this->width = width;
 		data = std::make_shared<std::vector<T>>(width*height);
 
-		std::cerr << "matrix constructor\n";
+		//std::cerr << "matrix constructor\n";
 	}
 
 	matrix(const matrix<T>& X) {
