@@ -130,7 +130,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="example1.cc" />
-    <ClCompile Include="example2.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

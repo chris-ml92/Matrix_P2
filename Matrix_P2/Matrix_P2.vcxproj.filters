@@ -38,8 +38,5 @@
     <ClCompile Include="example1.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="example2.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
